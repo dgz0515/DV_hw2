@@ -127,132 +127,166 @@ export default {
         }
       },
     },
-    'options.linkStrokeColor': {
+    // 'options.linkStrokeColor': {
+    //   handler() {
+    //     this.gLinkStroke.color = `${this.options.linkStrokeColor}`;
+    //     this.gLink.attr('stroke', this.gLinkStroke.color);
+    //   },
+    // },
+    // 'options.linkStrokeOpacity': {
+    //   handler() {
+    //     this.gLinkStroke.opacity = this.options.linkStrokeOpacity / 10;
+    //     this.gLink.attr('stroke-opacity', this.gLinkStroke.opacity);
+    //   },
+    // },
+    // 'options.linkStrokeWidth': {
+    //   handler() {
+    //     this.gLinkStroke.width = this.options.linkStrokeWidth;
+    //     this.gLink.attr('stroke-width', this.gLinkStroke.width);
+    //   },
+    // },
+    // 'options.nodeLabelFontSize': {
+    //   handler() {
+    //     this.nodeLabel.fontSize = `${this.options.nodeLabelFontSize}`;
+    //     this.gNode.selectAll('text').attr('font-size', this.nodeLabel.fontSize);
+    //   },
+    // },
+    'options.textIsShow': {
       handler() {
-        this.gLinkStroke.color = `${this.options.linkStrokeColor}`;
-        this.gLink.attr('stroke', this.gLinkStroke.color);
+        if (this.options.textIsShow) {
+          this.gNode.selectAll('text').attr('style', 'display: block');
+        } else {
+          this.gNode.selectAll('text').attr('style', 'display: none');
+        }
       },
     },
-    'options.linkStrokeOpacity': {
+    'options.textFontFamily': {
       handler() {
-        this.gLinkStroke.opacity = this.options.linkStrokeOpacity / 10;
-        this.gLink.attr('stroke-opacity', this.gLinkStroke.opacity);
-      },
-    },
-    'options.linkStrokeWidth': {
-      handler() {
-        this.gLinkStroke.width = this.options.linkStrokeWidth;
-        this.gLink.attr('stroke-width', this.gLinkStroke.width);
-      },
-    },
-    'options.nodeLabelFontSize': {
-      handler() {
-        this.nodeLabel.fontSize = `${this.options.nodeLabelFontSize}`;
-        this.gNode.selectAll('text').attr('font-size', this.nodeLabel.fontSize);
-      },
-    },
-    'options.nodeLabelFontFamily': {
-      handler() {
-        this.nodeLabel.fontFamily = this.options.nodeLabelFontFamily;
+        this.nodeLabel.fontFamily = this.options.textFontFamily;
         this.gNode
           .selectAll('text')
           .attr('font-family', this.nodeLabel.fontFamily);
       },
     },
-    'options.nodeLabelFontColor': {
+    'options.textFontColor': {
       handler() {
-        this.nodeLabel.fontColor = `${this.options.nodeLabelFontColor}`;
+        this.nodeLabel.fontColor = `${this.options.textFontColor}`;
         this.gNode.selectAll('text').attr('fill', this.nodeLabel.fontColor);
       },
     },
-    'options.nodeCircleSize': {
-      handler() {
-        this.nodeCircle.size = this.options.nodeCircleSize;
-        this.gNode.selectAll('circle').attr('r', this.nodeCircle.size);
-      },
+    'options.tooltipIsShow': {
+      handler(){
+        console.log('tooltipIsShow');
+      }
     },
-    'options.nodeCircleBorderWidth': {
+    'options.tooltipPadding': {
       handler() {
-        this.nodeCircle.borderWidth = this.options.nodeCircleBorderWidth;
-        this.gNode
-          .selectAll('circle')
-          .attr('stroke-width', this.nodeCircle.borderWidth);
-      },
+        console.log('tooltipPadding');
+      }
     },
-    'options.nodeCircleBorderColor': {
+    'options.tooltipColor': {
       handler() {
-        this.nodeCircle.borderColor = `${this.options.nodeCircleBorderColor}`;
-        this.gNode
-          .selectAll('circle')
-          .attr('stroke', this.nodeCircle.borderColor);
-      },
+        console.log('tooltipColor');
+      }
     },
-    'options.nodeCircleOpenFill': {
+    'options.tooltipBorder': {
       handler() {
-        this.nodeCircle.openFill = `${this.options.nodeCircleOpenFill}`;
-        this.gNode
-          .selectAll('circle')
-          .attr('fill', (d) =>
-            d._children
-              ? `${this.nodeCircle.openFill}`
-              : `${this.nodeCircle.closeFill}`
-          );
-      },
+        console.log('tooltipBorder');
+      }
     },
-    'options.nodeCircleCloseFill': {
+    'options.tooltipBorderRadius': {
       handler() {
-        this.nodeCircle.closeFill = `${this.options.nodeCircleCloseFill}`;
-        this.gNode
-          .selectAll('circle')
-          .attr('fill', (d) =>
-            d._children
-              ? `${this.nodeCircle.openFill}`
-              : `${this.nodeCircle.closeFill}`
-          );
-      },
+        console.log('tooltipBorderRadius');
+      }
     },
-    'options.animateDuration': {
-      handler() {
-        this.duration = this.options.animateDuration;
-      },
-    },
-    'options.animateExpandAll': {
-      handler() {
-        this.expandAll = this.options.animateExpandAll;
-        if (this.expandAll) {
-          this.treeRoot.descendants().forEach((d) => {
-            d.children = d._children;
-          });
-          this.updateTree(this.treeRoot);
-        } else {
-          this.treeRoot.descendants().forEach((d) => {
-            if (d.depth && d.data.name.length !== 7) d.children = null;
-          });
-          this.updateTree(this.treeRoot);
-        }
-      },
-    },
-    'options.treeLayoutWidth': {
-      handler() {
-        this.treeLayout.width = this.options.treeLayoutWidth;
-        this.tree.nodeSize([this.treeLayout.width, this.treeLayout.height]);
-        this.updateTree(this.treeRoot);
-      },
-    },
-    'options.treeLayoutHeight': {
-      handler() {
-        console.log('watched');
-        this.treeLayout.height = this.options.treeLayoutHeight;
-        this.tree.nodeSize([this.treeLayout.width, this.treeLayout.height]);
-        this.updateTree(this.treeRoot);
-      },
-    },
-    'options.treeLayoutDirection': {
-      handler() {
-        this.treeLayout.direction = this.options.treeLayoutDirection;
-        this.updateTree(this.treeRoot);
-      },
-    },
+    // 'options.nodeCircleSize': {
+    //   handler() {
+    //     this.nodeCircle.size = this.options.nodeCircleSize;
+    //     this.gNode.selectAll('circle').attr('r', this.nodeCircle.size);
+    //   },
+    // },
+    // 'options.nodeCircleBorderWidth': {
+    //   handler() {
+    //     this.nodeCircle.borderWidth = this.options.nodeCircleBorderWidth;
+    //     this.gNode
+    //       .selectAll('circle')
+    //       .attr('stroke-width', this.nodeCircle.borderWidth);
+    //   },
+    // },
+    // 'options.nodeCircleBorderColor': {
+    //   handler() {
+    //     this.nodeCircle.borderColor = `${this.options.nodeCircleBorderColor}`;
+    //     this.gNode
+    //       .selectAll('circle')
+    //       .attr('stroke', this.nodeCircle.borderColor);
+    //   },
+    // },
+    // 'options.nodeCircleOpenFill': {
+    //   handler() {
+    //     this.nodeCircle.openFill = `${this.options.nodeCircleOpenFill}`;
+    //     this.gNode
+    //       .selectAll('circle')
+    //       .attr('fill', (d) =>
+    //         d._children
+    //           ? `${this.nodeCircle.openFill}`
+    //           : `${this.nodeCircle.closeFill}`
+    //       );
+    //   },
+    // },
+    // 'options.nodeCircleCloseFill': {
+    //   handler() {
+    //     this.nodeCircle.closeFill = `${this.options.nodeCircleCloseFill}`;
+    //     this.gNode
+    //       .selectAll('circle')
+    //       .attr('fill', (d) =>
+    //         d._children
+    //           ? `${this.nodeCircle.openFill}`
+    //           : `${this.nodeCircle.closeFill}`
+    //       );
+    //   },
+    // },
+    // 'options.animateDuration': {
+    //   handler() {
+    //     this.duration = this.options.animateDuration;
+    //   },
+    // },
+    // 'options.animateExpandAll': {
+    //   handler() {
+    //     this.expandAll = this.options.animateExpandAll;
+    //     if (this.expandAll) {
+    //       this.treeRoot.descendants().forEach((d) => {
+    //         d.children = d._children;
+    //       });
+    //       this.updateTree(this.treeRoot);
+    //     } else {
+    //       this.treeRoot.descendants().forEach((d) => {
+    //         if (d.depth && d.data.name.length !== 7) d.children = null;
+    //       });
+    //       this.updateTree(this.treeRoot);
+    //     }
+    //   },
+    // },
+    // 'options.treeLayoutWidth': {
+    //   handler() {
+    //     this.treeLayout.width = this.options.treeLayoutWidth;
+    //     this.tree.nodeSize([this.treeLayout.width, this.treeLayout.height]);
+    //     this.updateTree(this.treeRoot);
+    //   },
+    // },
+    // 'options.treeLayoutHeight': {
+    //   handler() {
+    //     console.log('watched');
+    //     this.treeLayout.height = this.options.treeLayoutHeight;
+    //     this.tree.nodeSize([this.treeLayout.width, this.treeLayout.height]);
+    //     this.updateTree(this.treeRoot);
+    //   },
+    // },
+    // 'options.treeLayoutDirection': {
+    //   handler() {
+    //     this.treeLayout.direction = this.options.treeLayoutDirection;
+    //     this.updateTree(this.treeRoot);
+    //   },
+    // },
   },
   methods: {
     initTree() {

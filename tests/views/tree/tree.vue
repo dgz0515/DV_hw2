@@ -27,7 +27,7 @@
                   v-if="isInited"
                   :formData="formConfigText.formData"
                   :items="formConfigText.items"
-                  @eventdone="eventDoneText"
+                  @eventdone="eventDone"
                 ></HForm>
               </div>
             </el-scrollbar>
@@ -39,7 +39,7 @@
                   v-if="isInited"
                   :formData="formConfigTooltip.formData"
                   :items="formConfigTooltip.items"
-                  @eventdone="eventDone"
+                  @eventdone="eventDoneTooltip"
                 ></HForm>
               </div>
             </el-scrollbar>
