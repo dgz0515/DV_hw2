@@ -337,7 +337,7 @@ export default {
         'options.tooltipIsShow' : {
             handler() {
                 if(this.options.tooltipIsShow){
-                   this.tooltip.attr('style','display: block');
+                    this.tooltip.attr('style','display: block');
                 }else{
                     this.tooltip.attr('style','display: none');
                 }
@@ -780,6 +780,7 @@ export default {
 
             // bar的悬浮显示提示框
             this.chart.on('mouseover', function (d) {
+                // console.log('in bar');
                     const x =d3.event.layerX-50-chartpadding.left;
                     const y =d3.event.layerY-chartpadding.top;
                     d3.select('.tooltip')

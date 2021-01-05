@@ -5,30 +5,6 @@ export default {
     title: '是否显示提示框',
     default: true
   },
-  tooltipPaddingLeft: {
-    type: 'number',
-    title: '左侧内部间距',
-    default: 5,
-    values: [0,20]
-  },
-  tooltipPaddingRight: {
-    type: 'number',
-    title: '右侧内部间距',
-    default: 5,
-    values: [0,20]
-  },
-  tooltipPaddingTop: {
-    type: 'number',
-    title: '顶部内部间距',
-    default: 5,
-    values: [0,20]
-  },
-  tooltipPaddingBottom: {
-    type: 'number',
-    title: '底部内部间距',
-    default: 5,
-    values: [0,20]
-  },
   tooltipColor: {
     type: 'color',
     title: '内部颜色',
@@ -38,12 +14,12 @@ export default {
     type: 'number',
     title: '边框粗细',
     default: 1,
-    values: [0,10]
+    values: [0,3]
   },
   tooltipBorderRadius: {
     type: 'number',
     title: '边框圆角弧度',
     default: 0,
-    values: [0,100]
+    values: [0,15]
   }
 };

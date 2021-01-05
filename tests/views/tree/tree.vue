@@ -115,7 +115,6 @@ export default {
         leafNodeFill: '#888',
         nonLeafNodeFill: '#fff',
         tooltipIsShow: true,
-        tooltipPadding: { top: 0, right: 0, bottom: 0, left: 0 },
         tooltipColor: "#eee",
         tooltipBorder: "1px",
         tooltipBorderRadius: 0,

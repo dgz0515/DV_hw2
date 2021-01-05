@@ -24,7 +24,7 @@ export default {
   titleFontSize: {
     type: 'number',
     title: '文字字号',
-    default: 16,
+    default: 30,
     values: [10,50],
   },
   titleFontFamily: {

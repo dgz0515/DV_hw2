@@ -13,15 +13,17 @@ export default {
     return {
       tree: null,
       g: null,
+      zoomsvg: null,
       chart: null,
+      tooltip: null,
       click: null,
       panSpeed: 30,
       duration: 750,
       expandAll: false,
       title: null,
       titleText: 'Tree',
-      titleRectWidth: 460,
-      titleRectHeight: 40,
+      titleRectWidth: 500,
+      titleRectHeight: 50,
       gLinkStroke: { color: '#000', opacity: 0.8, width: 2 },
       text: { fontSize: 15, fontFamily: 'Arial', fontColor: '#000' },
       node: {
@@ -30,6 +32,7 @@ export default {
         nonLeafNodeFill: '#fff',
         leafNodeFill: '#888',
       },
+      tooltipPadding : {top: 5, right: 5, bottom: 5, left: 5},
       treeLayout: { width: 25, height: 300, direction: 'left' },
       width: 460,
       height: 460,
@@ -77,49 +80,43 @@ export default {
     },
     'options.titleTextPosition': {
       handler() {
-        if (this.options.titleIsShow) {
-          // 修改text相对标题rect的位置,来更改文本对齐方式
-          switch (this.options.titleTextPosition) {
-            case 'center':
-              this.title
-                .select('text')
-                .attr('text-anchor', 'middle')
-                .attr('x', 350);
-              break;
-            case 'left':
-              this.title
-                .select('text')
-                .attr('text-anchor', 'start')
-                .attr('x', 10);
-              break;
-            case 'right':
-              this.title
-                .select('text')
-                .attr('text-anchor', 'end')
-                .attr('x', 690);
-              break;
-            default:
-              break;
-          }
+        // 修改text相对标题rect的位置,来更改文本对齐方式
+        switch (this.options.titleTextPosition) {
+          case 'center':
+            this.title
+              .select('text')
+              .attr('text-anchor', 'middle')
+              .attr('x', this.titleRectWidth/2);
+            break;
+          case 'left':
+            this.title
+              .select('text')
+              .attr('text-anchor', 'start')
+              .attr('x', 10);
+            break;
+          case 'right':
+            this.title
+              .select('text')
+              .attr('text-anchor', 'end')
+              .attr('x', 690);
+            break;
+          default:
+            break;
         }
       },
     },
     'options.titleFontFamily': {
       handler() {
-        if (this.options.titleIsShow) {
-          this.title
-            .select('text')
-            .attr('font-family', this.options.titleFontFamily);
-        }
+        this.title
+          .select('text')
+          .attr('font-family', this.options.titleFontFamily);
       },
     },
     'options.titleFontSize': {
       handler() {
-        if (this.options.titleIsShow) {
-          this.title
-            .select('text')
-            .attr('font-size', this.options.titleFontSize);
-        }
+        this.title
+          .select('text')
+          .attr('font-size', this.options.titleFontSize);
       },
     },
     'options.nonLeafNodeFill': {
@@ -189,27 +186,30 @@ export default {
     },
     'options.tooltipIsShow': {
       handler(){
-        console.log('tooltipIsShow');
-      }
-    },
-    'options.tooltipPadding': {
-      handler() {
-        console.log('tooltipPadding');
+        if(this.options.tooltipIsShow){
+          this.tooltip.attr('style', 'display: block');
+        }else{
+          this.tooltip.attr('style', 'display: none');
+        }
       }
     },
     'options.tooltipColor': {
       handler() {
-        console.log('tooltipColor');
+        this.tooltip.select('rect')
+          .attr('fill', this.options.tooltipColor);
       }
     },
     'options.tooltipBorder': {
       handler() {
-        console.log('tooltipBorder');
+        this.tooltip.select('rect')
+          .attr('style', `stroke-width: ${this.options.tooltipBorder}`);
       }
     },
     'options.tooltipBorderRadius': {
       handler() {
-        console.log('tooltipBorderRadius');
+        this.tooltip.select('rect')
+          .attr('rx', `${this.options.tooltipBorderRadius}`)
+          .attr('ry', `${this.options.tooltipBorderRadius}`);
       }
     },
   },
@@ -229,20 +229,27 @@ export default {
         .attr('height', '100rem')
         .call(
           d3.zoom().on('zoom', () => {
-            this.svg.attr('transform', d3.event.transform);
+            console.log(d3.event.transform);
+            this.zoomsvg.attr('transform', d3.event.transform);
           })
-        )
+        );
+      this.zoomsvg = this.svg.append('g');
+      this.g = this.zoomsvg
         .append('g')
         .attr('transform', `translate(${this.width / 2},${this.height})`);
+        // .on('click',()=>{
+        //   console.log('svg');
+        // })
+        // ;
       // 添加links svg
-      this.gLink = this.svg
+      this.gLink = this.g
         .append('g')
         .attr('fill', 'none')
         .attr('stroke', this.gLinkStroke.color)
         .attr('stroke-opacity', this.gLinkStroke.opacity)
         .attr('stroke-width', this.gLinkStroke.width);
       // 添加nodes svg
-      this.gNode = this.svg
+      this.gNode = this.g
         .append('g')
         .attr('cursor', 'pointer')
         .attr('pointer-events', 'all');
@@ -258,7 +265,7 @@ export default {
       // 初始化tree
       this.tree = d3.tree();
       this.tree.nodeSize([this.treeLayout.width, this.treeLayout.height]);
-      console.log('init');
+      // console.log('init');
       this.tree(this.treeRoot);
       this.updateTree(this.treeRoot);
       // 添加图表标题
@@ -271,8 +278,8 @@ export default {
       this.title
         .append('rect')
         .attr('class', 'title')
-        .attr('width', 700)
-        .attr('height', `${this.titleRectHeight}`)
+        .attr('width', this.titleRectWidth)
+        .attr('height', this.titleRectHeight)
         .attr('fill', '#E3E3E3')
         .attr('x', '0')
         .attr('y', '0');
@@ -280,10 +287,26 @@ export default {
       this.title
         .append('text')
         .text(this.titleText)
-        .attr('x', 350)
-        .attr('y', 25)
+        .attr('x', this.titleRectWidth/2)
+        .attr('y', this.titleRectHeight-5)
         .attr('text-anchor', 'middle')
         .attr('fill', '#000');
+      this.tooltip = this.g
+        .append('g')
+        .attr('class', 'tooltip')
+        .attr('opacity', 0);
+      this.tooltip.append('rect')
+        .attr('fill', '#eeeeee')
+        .attr('width', 150)
+        .attr('height', 23)
+        .attr('rx', 0)
+        .attr('ry', 0)
+        .attr('stroke', 'black')
+        .attr('style', 'stroke-width:1');
+      this.tooltip.append('text')
+        .attr('font-size',12)
+        .attr('font-color', '#000')
+        .attr('transform', `translate(${this.tooltipPadding.left},${this.tooltipPadding.top+12})`);
     },
     /**
      * @description: update tree layout when needed
@@ -291,19 +314,21 @@ export default {
      * @return {*}
      */
     updateTree(source) {
-      console.log('update');
+      // console.log('update');
       this.linkH = d3
         .linkHorizontal()
         .x((d) => d.y)
         .y((d) => d.x);
-      this.svg.attr('writing-mode', 'horizontal-tb');
+      this.g
+        .attr('writing-mode', 'horizontal-tb');
 
       const nodes = this.treeRoot.descendants().reverse();
       const links = this.treeRoot.links();
       // Compute the new tree layout.
       this.tree(this.treeRoot);
       // transition setting
-      const transition = this.svg.transition().duration(this.duration);
+      const transition = this.g
+        .transition().duration(this.duration);
       // Update the nodes…
       const node = this.gNode.selectAll('g').data(nodes, (d) => d.id);
 
@@ -345,7 +370,34 @@ export default {
         .attr('stroke-linejoin', 'round')
         .attr('stroke-width', 3)
         .attr('stroke', 'white');
+      
+      this.gNode.selectAll('text')
+        .on('mouseover', function(d){
+          if(! d._children){
+            const w = this.getBBox().width*(d.data.name.length+5)/d.data.name.length;
+            const x = d.y0 + w;
+            const y = d.x0 - 12;
+            d3.select('.tooltip')
+              .attr('transform', `translate(${x},${y})`)
+              .attr('opacity', 0.7);
+            d3.select('.tooltip').select('rect')
+              .attr('width', w);
+            d3.select('.tooltip').select('text')
+              .text(`(${d.data.name}: ${d.data.value})`);
+          }
+        })
+        .on('mouseout', function(d){
+          if(! d._children){
+            d3.select('.tooltip')
+              .attr('opacity',0);
+          }
+        });
 
+      if (this.options.textIsShow) {
+        this.gNode.selectAll('text').attr('style', 'display: block');
+      } else {
+        this.gNode.selectAll('text').attr('style', 'display: none');
+      }
       // Transition nodes to their new position.
 
       node
