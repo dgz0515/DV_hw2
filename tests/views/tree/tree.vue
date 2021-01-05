@@ -32,7 +32,19 @@
               </div>
             </el-scrollbar>
           </el-tab-pane>
-          <el-tab-pane label="tooltip" name="third">
+          <el-tab-pane label="linkStroke" name="third">
+            <el-scrollbar style="height: 100%">
+              <div class="form-box">
+                <HForm
+                  v-if="isInited"
+                  :formData="formConfigLinkStroke.formData"
+                  :items="formConfigLinkStroke.items"
+                  @eventdone="eventDone"
+                ></HForm>
+              </div>
+            </el-scrollbar>
+          </el-tab-pane>
+          <el-tab-pane label="tooltip" name="fourth">
             <el-scrollbar style="height: 100%">
               <div class="form-box">
                 <HForm
@@ -57,6 +69,7 @@ import HForm from "~/tests/components/h-form";
 import settingTitle from "~/tests/setting-rules/property-setting-tree-title";
 import settingText from "~/tests/setting-rules/property-setting-tree-text";
 import settingTooltip from "~/tests/setting-rules/property-setting-tree-tooltip";
+import settingLinkStroke from "~/tests/setting-rules/property-setting-tree-linkStroke"
 
 import { cloneDeep } from "lodash";
 
@@ -83,6 +96,9 @@ export default {
         textIsShow: true,
         textFontFamily: "Arial",
         textFontColor: "#000",
+        linkStrokeColor: "#000",
+        linkStrokeOpacity: 0.8,
+        linkStrokeWidth: 2,
         tooltipIsShow: true,
         tooltipPadding: { top: 0, right: 0, bottom: 0, left: 0 },
         tooltipColor: "#eee",
@@ -101,6 +117,10 @@ export default {
         formData: {},
         items: []
       },
+      formConfigLinkStroke:{
+        formData: {},
+        items: []
+      }
     };
   },
   // https://cn.vuejs.org/v2/api/#created
@@ -124,6 +144,7 @@ export default {
       this.buildPropertyGroup(settingTitle, "formConfigTitle");
       this.buildPropertyGroup(settingText, "formConfigText");
       this.buildPropertyGroup(settingTooltip, "formConfigTooltip");
+      this.buildPropertyGroup(settingLinkStroke, "formConfigLinkStroke");
 
       this.$nextTick(() => {
         this.isInited = true;
