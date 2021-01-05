@@ -36,49 +36,13 @@ export default {
       height: 460,
       chartPadding: { top: 80, right: 80, bottom: 80, left: 80 },
       margin: { top: 10, right: 120, bottom: 10, left: 40 },
-      data: {
-        name: 'A1',
-        children: [
-          {
-            name: 'B1',
-            children: [
-              {
-                name: 'C1',
-                value: 100,
-              },
-              {
-                name: 'C2',
-                value: 300,
-              },
-              {
-                name: 'C3',
-                value: 200,
-              },
-            ],
-          },
-          {
-            name: 'B2',
-            value: 200,
-          },
-        ],
-      },
+      data: {}
     };
   },
   mounted() {
     // 这里会在实例被挂载后调用
     // 初始化图表
     this.initTree();
-  },
-  computed: {
-    // 这里是一些计算属性，当其中涉及的值发生变化时，计算属性会重新计算，返回新的值
-    ascendingData() {
-      // 升序排序
-      return this.sortKeyAscending(this.originData, 'value');
-    },
-    descendingData() {
-      // 降序排序
-      return this.sortKeyDescending(this.originData, 'value');
-    },
   },
   watch: {
     // watch的作用可以监控一个值的变换，并调用因为变化需要执行的方法。可以通过watch动态改变关联的状态。
@@ -98,11 +62,6 @@ export default {
         }
       },
     },
-    // 'options.titlePosition': {
-    //   handler() {
-    //     this.updateTitle();
-    //   },
-    // },
     'options.titleBackground': {
       handler() {
         if (this.options.titleIsShow) {
@@ -479,28 +438,6 @@ export default {
         d.y0 = d.y;
       });
     },
-
-    // updateTitle() {
-    //   if (this.options.titleIsShow) {
-    //     // 根据设置进行对应旋转和平移
-    //     switch (this.options.titlePosition) {
-    //       case 'top':
-    //         this.title.attr('transform', 'rotate(0) translate(0,0)');
-    //         break;
-    //       case 'bottom':
-    //         this.title.attr('transform', 'rotate(0) translate(0,660)');
-    //         break;
-    //       case 'left':
-    //         this.title.attr('transform', 'translate(0,700) rotate(270)');
-    //         break;
-    //       case 'right':
-    //         this.title.attr('transform', 'translate(700,0) rotate(90)');
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   }
-    // },
     sourceDirection(source) {
       switch (this.treeLayout.direction) {
         case 'left':

@@ -15,12 +15,6 @@ export default {
     title: '标题背景色',
     default: '#E3E3E3',
   },
-  titlePosition: {
-    type: 'enum',
-    title: '标题位置',
-    default: 'top',
-    values: ['top','bottom','left','right'],
-  },
   titleTextPosition: {
     type: 'enum',
     title: '文字对齐方式',
