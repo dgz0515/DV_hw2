@@ -20,7 +20,19 @@
               </div>
             </el-scrollbar>
           </el-tab-pane>
-          <el-tab-pane label="text" name="second">
+          <el-tab-pane label="node" name="second">
+            <el-scrollbar style="height: 100%">
+              <div class="form-box">
+                <HForm
+                  v-if="isInited"
+                  :formData="formConfigNode.formData"
+                  :items="formConfigNode.items"
+                  @eventdone="eventDone"
+                ></HForm>
+              </div>
+            </el-scrollbar>
+          </el-tab-pane>
+          <el-tab-pane label="text" name="third">
             <el-scrollbar style="height: 100%">
               <div class="form-box">
                 <HForm
@@ -32,19 +44,19 @@
               </div>
             </el-scrollbar>
           </el-tab-pane>
-          <el-tab-pane label="linkStroke" name="third">
+          <el-tab-pane label="link" name="fourth">
             <el-scrollbar style="height: 100%">
               <div class="form-box">
                 <HForm
                   v-if="isInited"
-                  :formData="formConfigLinkStroke.formData"
-                  :items="formConfigLinkStroke.items"
+                  :formData="formConfigLink.formData"
+                  :items="formConfigLink.items"
                   @eventdone="eventDone"
                 ></HForm>
               </div>
             </el-scrollbar>
           </el-tab-pane>
-          <el-tab-pane label="tooltip" name="fourth">
+          <el-tab-pane label="tooltip" name="fifth">
             <el-scrollbar style="height: 100%">
               <div class="form-box">
                 <HForm
@@ -69,7 +81,8 @@ import HForm from "~/tests/components/h-form";
 import settingTitle from "~/tests/setting-rules/property-setting-tree-title";
 import settingText from "~/tests/setting-rules/property-setting-tree-text";
 import settingTooltip from "~/tests/setting-rules/property-setting-tree-tooltip";
-import settingLinkStroke from "~/tests/setting-rules/property-setting-tree-linkStroke"
+import settingLink from "~/tests/setting-rules/property-setting-tree-link"
+import settingNode from "~/tests/setting-rules/property-setting-tree-node"
 
 import { cloneDeep } from "lodash";
 
@@ -99,6 +112,8 @@ export default {
         linkStrokeColor: "#000",
         linkStrokeOpacity: 0.8,
         linkStrokeWidth: 2,
+        leafNodeFill: '#888',
+        nonLeafNodeFill: '#fff',
         tooltipIsShow: true,
         tooltipPadding: { top: 0, right: 0, bottom: 0, left: 0 },
         tooltipColor: "#eee",
@@ -117,7 +132,11 @@ export default {
         formData: {},
         items: []
       },
-      formConfigLinkStroke:{
+      formConfigLink:{
+        formData: {},
+        items: []
+      },
+      formConfigNode:{
         formData: {},
         items: []
       }
@@ -144,7 +163,8 @@ export default {
       this.buildPropertyGroup(settingTitle, "formConfigTitle");
       this.buildPropertyGroup(settingText, "formConfigText");
       this.buildPropertyGroup(settingTooltip, "formConfigTooltip");
-      this.buildPropertyGroup(settingLinkStroke, "formConfigLinkStroke");
+      this.buildPropertyGroup(settingLink, "formConfigLink");
+      this.buildPropertyGroup(settingNode, "formConfigNode");
 
       this.$nextTick(() => {
         this.isInited = true;

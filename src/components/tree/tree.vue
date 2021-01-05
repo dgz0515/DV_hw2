@@ -23,13 +23,12 @@ export default {
       titleRectWidth: 460,
       titleRectHeight: 40,
       gLinkStroke: { color: '#000', opacity: 0.8, width: 2 },
-      nodeLabel: { fontSize: 15, fontFamily: 'Arial', fontColor: '#000' },
-      nodeCircle: {
+      text: { fontSize: 15, fontFamily: 'Arial', fontColor: '#000' },
+      node: {
         size: 5,
         borderWidth: 2,
-        borderColor: '#B83A3A',
-        openFill: '#fff',
-        closeFill: '#999',
+        nonLeafNodeFill: '#fff',
+        leafNodeFill: '#888',
       },
       treeLayout: { width: 25, height: 300, direction: 'left' },
       width: 460,
@@ -64,20 +63,16 @@ export default {
     },
     'options.titleBackground': {
       handler() {
-        if (this.options.titleIsShow) {
-          this.title
-            .select('rect')
-            .attr('fill', `${this.options.titleBackground}`);
-        }
+        this.title
+          .select('rect')
+          .attr('fill', this.options.titleBackground);
       },
     },
     'options.titleFontColor': {
       handler() {
-        if (this.options.titleIsShow) {
-          this.title
-            .select('text')
-            .attr('fill', `${this.options.titleFontColor}`);
-        }
+        this.title
+          .select('text')
+          .attr('fill', this.options.titleFontColor);
       },
     },
     'options.titleTextPosition': {
@@ -114,7 +109,7 @@ export default {
         if (this.options.titleIsShow) {
           this.title
             .select('text')
-            .attr('font-family', `${this.options.titleFontFamily}`);
+            .attr('font-family', this.options.titleFontFamily);
         }
       },
     },
@@ -123,8 +118,32 @@ export default {
         if (this.options.titleIsShow) {
           this.title
             .select('text')
-            .attr('font-size', `${this.options.titleFontSize}`);
+            .attr('font-size', this.options.titleFontSize);
         }
+      },
+    },
+    'options.nonLeafNodeFill': {
+      handler() {
+        this.node.nonLeafNodeFill = `${this.options.nonLeafNodeFill}`;
+        this.gNode
+          .selectAll('circle')
+          .attr('fill', (d) =>
+            d._children
+              ? `${this.node.nonLeafNodeFill}`
+              : `${this.node.leafNodeFill}`
+          );
+      },
+    },
+    'options.leafNodeFill': {
+      handler() {
+        this.node.leafNodeFill = `${this.options.leafNodeFill}`;
+        this.gNode
+          .selectAll('circle')
+          .attr('fill', (d) =>
+            d._children
+              ? `${this.node.nonLeafNodeFill}`
+              : `${this.node.leafNodeFill}`
+          );
       },
     },
     'options.textIsShow': {
@@ -138,16 +157,16 @@ export default {
     },
     'options.textFontFamily': {
       handler() {
-        this.nodeLabel.fontFamily = this.options.textFontFamily;
+        this.text.fontFamily = this.options.textFontFamily;
         this.gNode
           .selectAll('text')
-          .attr('font-family', this.nodeLabel.fontFamily);
+          .attr('font-family', this.text.fontFamily);
       },
     },
     'options.textFontColor': {
       handler() {
-        this.nodeLabel.fontColor = `${this.options.textFontColor}`;
-        this.gNode.selectAll('text').attr('fill', this.nodeLabel.fontColor);
+        this.text.fontColor = `${this.options.textFontColor}`;
+        this.gNode.selectAll('text').attr('fill', this.text.fontColor);
       },
     },
     'options.linkStrokeColor': {
@@ -234,7 +253,7 @@ export default {
       this.treeRoot.descendants().forEach((d, i) => {
         d.id = i;
         d._children = d.children;
-        if (d.depth && d.data.name.length !== 7) d.children = null;
+        if (d.depth>=2 || (d.depth && d.data.name.length !== 7 )) d.children = null;
       });
       // 初始化tree
       this.tree = d3.tree();
@@ -242,7 +261,6 @@ export default {
       console.log('init');
       this.tree(this.treeRoot);
       this.updateTree(this.treeRoot);
-
       // 添加图表标题
       this.title = d3
         .select('#tree-container svg')
@@ -272,11 +290,13 @@ export default {
      * @param {*} source
      * @return {*}
      */
-
     updateTree(source) {
       console.log('update');
-      this.linkDirection();
-      this.svg.attr('writing-mode', this.writeMode());
+      this.linkH = d3
+        .linkHorizontal()
+        .x((d) => d.y)
+        .y((d) => d.x);
+      this.svg.attr('writing-mode', 'horizontal-tb');
 
       const nodes = this.treeRoot.descendants().reverse();
       const links = this.treeRoot.links();
@@ -291,7 +311,7 @@ export default {
       const nodeEnter = node
         .enter()
         .append('g')
-        .attr('transform', this.sourceDirection(source))
+        .attr('transform', `translate(${source.y0},${source.x0})`)
         .attr('fill-opacity', 0)
         .attr('stroke-opacity', 0)
         .on('click', (d) => {
@@ -302,15 +322,13 @@ export default {
 
       nodeEnter
         .append('circle')
-        .attr('class', 'nodeCircle')
-        .attr('r', this.nodeCircle.size)
+        .attr('class', 'node')
+        .attr('r', this.node.size)
         .attr('fill', (d) =>
-          d._children
-            ? `${this.nodeCircle.openFill}`
-            : `${this.nodeCircle.closeFill}`
+          d._children ? this.node.nonLeafNodeFill : this.node.leafNodeFill
         )
-        .attr('stroke', `${this.nodeCircle.borderColor}`)
-        .attr('stroke-width', this.nodeCircle.borderWidth);
+        .attr('stroke', this.color)
+        .attr('stroke-width', this.node.borderWidth);
 
       nodeEnter
         .append('text')
@@ -319,9 +337,9 @@ export default {
         .attr('class', 'nodeText')
         .attr('text-anchor', (d) => (d._children ? 'end' : 'start'))
         .text((d) => d.data.name)
-        .attr('font-size', this.nodeLabel.fontSize)
-        .attr('font-family', this.nodeLabel.fontFamily)
-        .attr('fill', this.nodeLabel.fontColor)
+        .attr('font-size', this.text.fontSize)
+        .attr('font-family', this.text.fontFamily)
+        .attr('fill', this.text.fontColor)
         .clone(true)
         .lower()
         .attr('stroke-linejoin', 'round')
@@ -333,7 +351,7 @@ export default {
       node
         .merge(nodeEnter)
         .transition(transition)
-        .attr('transform', (d) => this.nodeDirection(d))
+        .attr('transform', (d) => `translate(${d.y},${d.x})`)
         .attr('fill-opacity', 1)
         .attr('stroke-opacity', 1);
 
@@ -342,7 +360,7 @@ export default {
         .exit()
         .transition(transition)
         .remove()
-        .attr('transform', this.sourceDirection(source))
+        .attr('transform', `translate(${source.y0},${source.x0})`)
         .attr('fill-opacity', 0)
         .attr('stroke-opacity', 0);
 
@@ -378,80 +396,18 @@ export default {
         d.y0 = d.y;
       });
     },
-    sourceDirection(source) {
-      switch (this.treeLayout.direction) {
-        case 'left':
-          return `translate(${source.y0},${source.x0})`;
-        case 'top':
-          return `translate(${source.x0},${source.y0})`;
-        case 'bottom':
-          return `translate(${-source.x0},${-source.y0})`;
-        case 'right':
-          return `translate(${-source.y0},${-source.x0})`;
-        default:
-          return `translate(${source.y0},${source.x0})`;
+    color(node){
+      const color = d3.scaleOrdinal()
+        .domain(this.treeRoot.descendants().filter(d => d.depth<=1).map(d => d.data.name))
+        .range(d3.schemeCategory10);
+      if(node.depth===0){
+        return color(node.data.name);
       }
-    },
-    nodeDirection(d) {
-      switch (this.treeLayout.direction) {
-        case 'left':
-          return `translate(${d.y},${d.x})`;
-        case 'top':
-          return `translate(${d.x},${d.y})`;
-        case 'bottom':
-          return `translate(${-d.x},${-d.y})`;
-        case 'right':
-          return `translate(${-d.y},${-d.x})`;
-        default:
-          return `translate(${d.y},${d.x})`;
+      while(node.depth>1){
+        node = node.parent;
       }
-    },
-    linkDirection() {
-      switch (this.treeLayout.direction) {
-        case 'left':
-          this.linkH = d3
-            .linkHorizontal()
-            .x((d) => d.y)
-            .y((d) => d.x);
-          break;
-        case 'top':
-          this.linkH = d3
-            .linkVertical()
-            .x((d) => d.x)
-            .y((d) => d.y);
-          break;
-        case 'right':
-          this.linkH = d3
-            .linkHorizontal()
-            .x((d) => -d.y)
-            .y((d) => -d.x);
-          break;
-        case 'bottom':
-          this.linkH = d3
-            .linkVertical()
-            .x((d) => -d.x)
-            .y((d) => -d.y);
-          break;
-        default:
-          this.linkH = d3
-            .linkHorizontal()
-            .x((d) => d.y)
-            .y((d) => d.x);
-          break;
-      }
-    },
-    writeMode() {
-      switch (this.treeLayout.direction) {
-        case 'left':
-          return 'horizontal-tb';
-        case 'top':
-          return 'vertical-lr';
-        case 'bottom':
-          return 'vertical-lr';
-        default:
-          return 'horizontal-tb';
-      }
-    },
+      return color(node.data.name);
+    }
   },
 };
 </script>
