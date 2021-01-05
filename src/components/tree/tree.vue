@@ -352,7 +352,7 @@ export default {
       this.gNode.selectAll('text')
         .on('mouseover', function(d){
           if(! d._children){
-            const w = this.getBBox().width*(d.data.name.length+5)/d.data.name.length;
+            const w = this.getBBox().width*(d.data.name.length+7)/d.data.name.length;
             const x = d.y0 + w;
             const y = d.x0 - 12;
             d3.select('.tooltip')
